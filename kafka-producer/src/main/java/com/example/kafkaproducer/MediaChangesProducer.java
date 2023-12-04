@@ -25,7 +25,7 @@ public class MediaChangesProducer {
 
     public void sendMessage() {
 
-        String topic = "media";
+        String topic = "wikimedia_recentchange";
 
         // to read ral time stream data from media, we use event source
         BackgroundEventHandler eventHandler = new MediaChangesHandler(kafkaTemplate, topic);

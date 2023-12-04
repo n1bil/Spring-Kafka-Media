@@ -23,13 +23,16 @@ public class MediaChangesProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendMessage() throws InterruptedException {
+    public void sendMessage() {
 
         String topic = "media";
 
         // to read ral time stream data from media, we use event source
         BackgroundEventHandler eventHandler = new MediaChangesHandler(kafkaTemplate, topic);
-        String url = "stream.media.org/v2/stream/recentchange";
+        String url = "https://stream.wikimedia.org/v2/stream/recentchange";
+
+
+
 
         BackgroundEventSource eventSource = new BackgroundEventSource.Builder(eventHandler,
                 new EventSource.Builder(ConnectStrategy.http(URI.create(url))))
@@ -37,7 +40,12 @@ public class MediaChangesProducer {
 
         eventSource.start();
 
-        TimeUnit.MINUTES.sleep(10);
+        try {
+            TimeUnit.MINUTES.sleep(10);
+        } catch (InterruptedException e) {
+            LOGGER.error(String.format("Error %s", e.getMessage()));
+            throw new RuntimeException("An error has occurred");
+        }
 
     }
 

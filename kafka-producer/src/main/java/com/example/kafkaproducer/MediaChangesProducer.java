@@ -6,6 +6,7 @@ import com.launchdarkly.eventsource.background.BackgroundEventHandler;
 import com.launchdarkly.eventsource.background.BackgroundEventSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,9 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class MediaChangesProducer {
+
+    @Value("${spring.kafka.topic.name}")
+    private String topicName;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MediaChangesProducer.class);
 
@@ -25,12 +29,9 @@ public class MediaChangesProducer {
 
     public void sendMessage() {
 
-        String topic = "wikimedia_recentchange";
-
         // to read ral time stream data from media, we use event source
-        BackgroundEventHandler eventHandler = new MediaChangesHandler(kafkaTemplate, topic);
+        BackgroundEventHandler eventHandler = new MediaChangesHandler(kafkaTemplate, topicName);
         String url = "https://stream.wikimedia.org/v2/stream/recentchange";
-
 
 
 
